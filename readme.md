@@ -15,8 +15,8 @@ https://drive.google.com/file/d/1uea1MB2D8J8lyGyiItUnDr70PsvKLdOo/view?usp=shari
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/midul9797/api-gateway.git
-cd api-gateway
+git clone https://github.com/midul9797/notification-service.git
+cd notification-service
 ```
 
 ### 2. Install Dependencies
