@@ -1,6 +1,45 @@
+# Notification Service
+
+## Explanation Video:
+
+https://drive.google.com/file/d/1uea1MB2D8J8lyGyiItUnDr70PsvKLdOo/view?usp=sharing
+
+## Prerequisites
+
+- Node.js (version 20 or later)
+- npm or yarn
+- Redis(Port: 6379)
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/midul9797/api-gateway.git
+cd api-gateway
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Environment Variables
+
+1. Rename `envfile.example` to `.env`
+2. It contains the required environment variables
+
+### 4. Start Server
+
+```bash
+npm start
+# or
+yarn start
 # Project Documentation
 
-This document outlines the structure and key components of the project.
 
 ---
 
@@ -87,8 +126,10 @@ This document describes the endpoints for the Notification Service API, allowing
 ## **Base URL**
 
 ```
+
 http://localhost:4004/api/v1
-```
+
+````
 
 ---
 
@@ -108,7 +149,7 @@ http://localhost:4004/api/v1
 {
   "Authorization": "<your-token>"
 }
-```
+````
 
 **Body:**
 

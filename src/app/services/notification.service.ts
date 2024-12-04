@@ -1,12 +1,19 @@
 /* eslint-disable no-console */
-import httpStatus from 'http-status';
-import ApiError from '../../errors/ApiError';
-import { INotification } from '../interfaces/notification.interface';
-import { Notification } from '../models/notification.model';
-import sendNotification from '../../server';
-import { transporter } from '../../shared/nodeMailer';
-import { RedisClient } from '../../shared/redis';
+import httpStatus from 'http-status'; // Import httpStatus for HTTP status codes
+import ApiError from '../../errors/ApiError'; // Import ApiError for API error handling
+import { INotification } from '../interfaces/notification.interface'; // Import INotification interface for notification structure
+import { Notification } from '../models/notification.model'; // Import Notification model for database operations
+import sendNotification from '../../server'; // Import sendNotification function for sending notifications
+import { transporter } from '../../shared/nodeMailer'; // Import transporter for sending emails
+import { RedisClient } from '../../shared/redis'; // Import RedisClient for Redis operations
 
+/**
+ * Creates a new notification in the database and sends it to the user if the type is 'email'.
+ * @param payload - The notification payload.
+ * @param email - The recipient's email address.
+ * @param name - The recipient's name.
+ * @returns The created notification or null if creation fails.
+ */
 const createNotificationInDB = async (
   payload: INotification,
   email: string,
@@ -16,6 +23,7 @@ const createNotificationInDB = async (
   if (!createdNotification)
     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to upload notification');
 
+  // Send the notification to the user if the type is 'email'
   sendNotification(payload.userId, createdNotification);
 
   if (payload.type === 'email') {
@@ -33,6 +41,7 @@ const createNotificationInDB = async (
     </div>`,
     });
   }
+  // Store the notification in Redis for caching
   RedisClient.setNotification(
     createdNotification.userId,
     JSON.stringify(createdNotification),
@@ -40,6 +49,11 @@ const createNotificationInDB = async (
   return createdNotification;
 };
 
+/**
+ * Retrieves notifications from the database for a given user.
+ * @param userId - The user's ID.
+ * @returns An array of notifications or null if retrieval fails.
+ */
 const getNotificationsFromDB = async (
   userId: string,
 ): Promise<INotification[] | null> => {
@@ -50,6 +64,12 @@ const getNotificationsFromDB = async (
     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to get notifications');
   return notifications;
 };
+
+/**
+ * Retrieves notifications from the Redis cache for a given user.
+ * @param userId - The user's ID.
+ * @returns An array of notifications or null if retrieval fails.
+ */
 const getNotificationsFromRedisCache = async (
   userId: string,
 ): Promise<INotification[] | null> => {
@@ -58,6 +78,13 @@ const getNotificationsFromRedisCache = async (
     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to get notifications');
   return notifications;
 };
+
+/**
+ * Updates a notification in the database.
+ * @param notificationId - The ID of the notification to update.
+ * @param data - The partial data to update the notification with.
+ * @returns A boolean indicating success or null if update fails.
+ */
 const updateNotificationsInDB = async (
   notificationId: string,
   data: Partial<INotification>,
@@ -71,6 +98,7 @@ const updateNotificationsInDB = async (
   return true;
 };
 
+// Export the notification services
 export const notificationServices = {
   createNotificationInDB,
   getNotificationsFromDB,

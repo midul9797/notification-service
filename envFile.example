@@ -1,0 +1,5 @@
+NODE_ENV=development
+PORT=4004
+REDIS_URL=redis://localhost:6379
+REDIS_CACHE_EXPIRE=84600
+DATABASE_URL=mongodb+srv://midul:9142021@cluster0.worr8fb.mongodb.net/notification-service?retryWrites=true&w=majority&appName=Cluster0
