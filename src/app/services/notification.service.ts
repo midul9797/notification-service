@@ -3,9 +3,9 @@ import httpStatus from 'http-status'; // Import httpStatus for HTTP status codes
 import ApiError from '../../errors/ApiError'; // Import ApiError for API error handling
 import { INotification } from '../interfaces/notification.interface'; // Import INotification interface for notification structure
 import { Notification } from '../models/notification.model'; // Import Notification model for database operations
-import sendNotification from '../../server'; // Import sendNotification function for sending notifications
 import { transporter } from '../../shared/nodeMailer'; // Import transporter for sending emails
 import { RedisClient } from '../../shared/redis'; // Import RedisClient for Redis operations
+import { getIO } from '../../socket';
 
 /**
  * Creates a new notification in the database and sends it to the user if the type is 'email'.
@@ -14,17 +14,22 @@ import { RedisClient } from '../../shared/redis'; // Import RedisClient for Redi
  * @param name - The recipient's name.
  * @returns The created notification or null if creation fails.
  */
+
 const createNotificationInDB = async (
   payload: INotification,
   email: string,
   name: string,
 ): Promise<INotification | null> => {
+  const io = getIO();
   const createdNotification = await Notification.create(payload);
   if (!createdNotification)
     throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to upload notification');
 
   // Send the notification to the user if the type is 'email'
-  sendNotification(payload.userId, createdNotification);
+  io.to(payload.userId).emit(
+    'notification',
+    JSON.parse(JSON.stringify(createdNotification)),
+  );
 
   if (payload.type === 'email') {
     transporter.sendMail({

@@ -5,15 +5,12 @@ import app from './app'; // Import Express application
 import http from 'http'; // Import HTTP module for server creation
 import { Server, Socket } from 'socket.io'; // Import Socket.IO for real-time communication
 import { RedisClient } from './shared/redis'; // Import Redis client for caching
+import { initSocket } from './socket';
 
 // Create an HTTP server with the Express application
 const server = http.createServer(app);
 // Initialize Socket.IO server with CORS configuration for client connections
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-  },
-});
+const io = initSocket(server);
 
 // Handle uncaught exceptions and exit the process
 process.on('uncaughtException', error => {
@@ -30,20 +27,7 @@ async function boostrap() {
     // Connect to Redis for caching
     await RedisClient.connect();
     // Handle new client connections
-    io.on('connection', (socket: Socket) => {
-      console.log('New client connected:', socket.id);
 
-      // Handle client subscription to a specific room
-      socket.on('subscribe', (userId: string) => {
-        socket.join(userId); // Join a room specific to the user
-        console.log(`User ${userId} joined room.`);
-      });
-
-      // Handle client disconnection
-      socket.on('disconnect', () => {
-        console.log('Client disconnected');
-      });
-    });
     // Start the server and listen on a specific port
     server.listen(config.port, () => {
       console.log('server running');
@@ -64,16 +48,8 @@ async function boostrap() {
 // Call the bootstrap function to start the server
 boostrap();
 
-// Function to send notifications to a specific user
-const sendNotification = (userId: string, notification: any) => {
-  io.to(userId).emit('notification', notification);
-};
-
 // Handle SIGTERM signal to gracefully close the server
 process.on('SIGTERM', error => {
   console.log('SIGTERM recieved' + error);
   if (server) server.close();
 });
-
-// Export the sendNotification function
-export default sendNotification;
