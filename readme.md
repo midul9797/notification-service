@@ -1,8 +1,5 @@
 # Notification Service
 
-## Explanation Video:
-
-https://drive.google.com/file/d/1uea1MB2D8J8lyGyiItUnDr70PsvKLdOo/view?usp=sharing
 
 ## Prerequisites
 
